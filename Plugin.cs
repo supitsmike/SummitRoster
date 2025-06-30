@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using Unity.Mathematics;
 using Photon.Pun;
 using Zorro.Core;
+using Zorro.Settings;
+using Zorro.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +24,15 @@ public class Plugin : BaseUnityPlugin
     {
         // Plugin startup logic
         Logger = base.Logger;
+        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
         Harmony.CreateAndPatchAll(typeof(Plugin));
+    }
 
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+    private void Start()
+    {
+        SettingsHandler.Instance.AddSetting(new ProgressBarDisplayModeSetting());
+        // SettingsHandler.Instance.AddSetting(new ProgressBarDisplayRangeSetting());
     }
 
     [HarmonyPatch(typeof(RunManager), "StartRun")]
@@ -40,12 +47,16 @@ public class Plugin : BaseUnityPlugin
 public class ProgressMap : MonoBehaviourPunCallbacks
 {
     private GameObject overlay;
+    private GameObject peakGO;
     private TMP_FontAsset mainFont;
     private Dictionary<Character, GameObject> characterLabels = new();
     const float totalMountainHeight = 1920f; // in meters
     const float barHeightPixels = 800f;
     const float leftOffset = 60f;
     const float bottomOffset = 50f;
+
+    private ProgressBarDisplayMode displayMode = ProgressBarDisplayMode.Full;
+    private float displayRange = 100f;
 
     private void Awake()
     {
@@ -70,7 +81,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         }
 
         // PEAK header
-        GameObject peakGO = new GameObject("PeakText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        peakGO = new GameObject("PeakText", typeof(RectTransform), typeof(TextMeshProUGUI));
         peakGO.transform.SetParent(overlay.transform, false);
 
         TextMeshProUGUI peakText = peakGO.GetComponent<TextMeshProUGUI>();
@@ -104,12 +115,27 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         {
             AddCharacter(character);
         }
+
+        displayMode = SettingsHandler.Instance.GetSetting<ProgressBarDisplayModeSetting>().Value;
+        // displayRange = SettingsHandler.Instance.GetSetting<ProgressBarDisplayRangeSetting>().Value;
     }
 
     private void LateUpdate()
     {
-        foreach (var (character, labelGO) in characterLabels)
+        displayMode = SettingsHandler.Instance.GetSetting<ProgressBarDisplayModeSetting>().Value;
+        // displayRange = SettingsHandler.Instance.GetSetting<ProgressBarDisplayRangeSetting>().Value;
+
+        peakGO.SetActive(displayMode == ProgressBarDisplayMode.Full);
+
+        foreach (var character in Character.AllCharacters)
         {
+            if (!characterLabels.ContainsKey(character))
+            {
+                AddCharacter(character);
+            }
+
+            GameObject labelGO = characterLabels[character];
+
             float height = character.refs.stats.heightInMeters;
             string nickname = character.refs.view.Owner.NickName;
 
@@ -120,8 +146,27 @@ public class ProgressMap : MonoBehaviourPunCallbacks
             label.color = character.refs.customization.PlayerColor;
             labelGO.GetComponentInChildren<Image>().color = character.refs.customization.PlayerColor;
 
-            float normalized = Mathf.InverseLerp(0f, totalMountainHeight, height);
-            float pixelY = Mathf.Lerp(-barHeightPixels / 2f, barHeightPixels / 2f, normalized);
+            float pixelY = 0;
+            if (displayMode == ProgressBarDisplayMode.Full)
+            {
+                float normalized = Mathf.InverseLerp(0f, totalMountainHeight, height);
+                pixelY = Mathf.Lerp(-barHeightPixels / 2f, barHeightPixels / 2f, normalized);
+            }
+            else if (displayMode == ProgressBarDisplayMode.Centered)
+            {
+                float localH = Character.localCharacter.refs.stats.heightInMeters;
+                float logH = Mathf.Log(localH);
+                float logMin = logH - Mathf.Log(displayRange);
+                float logMax = logH + Mathf.Log(displayRange);
+                float logValue = Mathf.Log(height);
+
+                // normalized now runs 0→1 over [localH/zoom … localH*zoom], with log scaling
+                float normalized = Mathf.InverseLerp(logMin, logMax, logValue);
+                normalized = Mathf.Clamp01(normalized);
+
+                pixelY = Mathf.Lerp(-barHeightPixels / 2f, barHeightPixels / 2f, normalized);
+
+            }
 
             RectTransform labelRect = labelGO.GetComponent<RectTransform>();
             labelRect.anchoredPosition = new Vector2(leftOffset + 50f, bottomOffset + pixelY);
