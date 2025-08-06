@@ -27,7 +27,7 @@ Mode can be adjusted from the Settings page and updates in realtime.
 
 To build this plugin using Visual Studio:
 
-1. Befor opening the `SummitRoster.sln` solution file in Visual Studio you will need to open the `SummitRoster/SummitRoster.csproj` file in a text editor and update the paths for the following DLLs to point to their correct locations on your system:
+1. Before opening the `SummitRoster.sln` solution file in Visual Studio you will need to open the `SummitRoster/SummitRoster.csproj` file in a text editor and update the paths for the following DLLs to point to their correct locations on your system:
 	- Assembly-CSharp
 	- netstandard
 	- PhotonRealtime
