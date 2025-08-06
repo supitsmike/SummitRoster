@@ -1,12 +1,7 @@
+﻿using System.Collections.Generic;
 using Zorro.Settings;
-using Zorro.Core;
-using Zorro.Core.CLI;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 
-namespace ProgressMap
+namespace SummitRoster
 {
     enum ProgressBarDisplayMode
     {

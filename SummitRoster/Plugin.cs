@@ -4,16 +4,12 @@ using HarmonyLib;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Mathematics;
 using Photon.Pun;
-using Zorro.Core;
-using Zorro.Settings;
-using Zorro.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProgressMap;
+namespace SummitRoster;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
