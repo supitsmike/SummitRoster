@@ -3,12 +3,12 @@ using Zorro.Settings;
 
 namespace SummitRoster;
 
-enum ProgressBarDisplayMode
+internal enum ProgressBarDisplayMode
 {
     Full, Centered
 }
 
-class ProgressBarDisplayModeSetting : EnumSetting<ProgressBarDisplayMode>, IExposedSetting
+internal class ProgressBarDisplayModeSetting : EnumSetting<ProgressBarDisplayMode>, IExposedSetting
 {
     public string GetDisplayName()
     {
