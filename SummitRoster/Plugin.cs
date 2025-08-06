@@ -42,7 +42,7 @@ public class Plugin : BaseUnityPlugin
 public class ProgressMap : MonoBehaviourPunCallbacks
 {
     private GameObject _overlay;
-    private GameObject _peakGo;
+    private GameObject _peakGameObject;
     private TMP_FontAsset _mainFont;
     private readonly Dictionary<Character, GameObject> _characterLabels = new();
     private const float TotalMountainHeight = 1920f; // in meters
@@ -77,30 +77,30 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         }
 
         // PEAK header
-        _peakGo = new GameObject("PeakText", typeof(RectTransform), typeof(TextMeshProUGUI));
-        _peakGo.transform.SetParent(_overlay.transform, false);
+        _peakGameObject = new GameObject("PeakText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        _peakGameObject.transform.SetParent(_overlay.transform, false);
 
-        var peakText = _peakGo.GetComponent<TextMeshProUGUI>();
+        var peakText = _peakGameObject.GetComponent<TextMeshProUGUI>();
         peakText.font = _mainFont;
         peakText.text = "PEAK";
         peakText.color = new Color(1f, 1f, 1f, 0.3f);
 
-        var peakRect = _peakGo.GetComponent<RectTransform>();
+        var peakRect = _peakGameObject.GetComponent<RectTransform>();
         peakRect.sizeDelta = peakText.GetPreferredValues();
         peakRect.anchorMin = peakRect.anchorMax = new Vector2(0, 0.5f);
         peakRect.pivot = new Vector2(0.5f, 0f);
         peakRect.anchoredPosition = new Vector2(LeftOffset, BottomOffset + (BarHeightPixels / 2));
 
         // Add vertical bar
-        var barGO = new GameObject("AltitudeBar");
-        barGO.transform.SetParent(_overlay.transform, false);
+        var barGameObject = new GameObject("AltitudeBar");
+        barGameObject.transform.SetParent(_overlay.transform, false);
 
-        var barRect = barGO.AddComponent<RectTransform>();
+        var barRect = barGameObject.AddComponent<RectTransform>();
         barRect.anchorMin = barRect.anchorMax = new Vector2(0, 0.5f);
         barRect.sizeDelta = new Vector2(10, BarHeightPixels);
         barRect.anchoredPosition = new Vector2(LeftOffset, BottomOffset);
 
-        var barImage = barGO.AddComponent<Image>();
+        var barImage = barGameObject.AddComponent<Image>();
         barImage.color = new Color(0.75f, 0.75f, 0.69f, 0.3f);
     }
 
@@ -119,7 +119,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
     {
         _displayMode = SettingsHandler.Instance.GetSetting<ProgressBarDisplayModeSetting>().Value;
 
-        _peakGo.SetActive(_displayMode == ProgressBarDisplayMode.Full);
+        _peakGameObject.SetActive(_displayMode == ProgressBarDisplayMode.Full);
 
         foreach (var character in Character.AllCharacters)
         {
@@ -128,17 +128,17 @@ public class ProgressMap : MonoBehaviourPunCallbacks
                 AddCharacter(character);
             }
 
-            var labelGO = _characterLabels[character];
+            var labelGameObject = _characterLabels[character];
 
             var height = character.refs.stats.heightInMeters;
             var nickname = character.refs.view.Owner.NickName;
 
-            var label = labelGO.GetComponentInChildren<TextMeshProUGUI>();
+            var label = labelGameObject.GetComponentInChildren<TextMeshProUGUI>();
             label.text = $"{nickname} {height}m";
             label.gameObject.GetComponent<RectTransform>().sizeDelta = label.GetPreferredValues() * 1.1f;
 
             label.color = character.refs.customization.PlayerColor;
-            labelGO.GetComponentInChildren<Image>().color = character.refs.customization.PlayerColor;
+            labelGameObject.GetComponentInChildren<Image>().color = character.refs.customization.PlayerColor;
 
             float pixelY = 0;
             if (_displayMode == ProgressBarDisplayMode.Full)
@@ -162,7 +162,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
 
             }
 
-            var labelRect = labelGO.GetComponent<RectTransform>();
+            var labelRect = labelGameObject.GetComponent<RectTransform>();
             labelRect.anchoredPosition = new Vector2(LeftOffset + 50f, BottomOffset + pixelY);
         }
     }
@@ -198,46 +198,46 @@ public class ProgressMap : MonoBehaviourPunCallbacks
             var nickname = character.refs.view.Owner.NickName;
 
             // Parent label object
-            var labelGO = new GameObject($"Label_{nickname}");
-            labelGO.transform.SetParent(_overlay.transform, false);
+            var labelGameObject = new GameObject($"Label_{nickname}");
+            labelGameObject.transform.SetParent(_overlay.transform, false);
 
-            var labelRect = labelGO.AddComponent<RectTransform>();
+            var labelRect = labelGameObject.AddComponent<RectTransform>();
             labelRect.anchorMin = labelRect.anchorMax = new Vector2(0, 0.5f);
 
             // Dot marker
-            var markerGO = new GameObject($"Marker");
-            markerGO.transform.SetParent(labelGO.transform, false);
+            var markerGameObject = new GameObject("Marker");
+            markerGameObject.transform.SetParent(labelGameObject.transform, false);
 
-            var marker = markerGO.AddComponent<Image>();
+            var marker = markerGameObject.AddComponent<Image>();
             marker.color = character.refs.customization.PlayerColor;
 
-            var markerRect = markerGO.GetComponent<RectTransform>();
+            var markerRect = markerGameObject.GetComponent<RectTransform>();
             markerRect.anchorMin = markerRect.anchorMax = new Vector2(0, 0.5f);
             markerRect.pivot = new Vector2(0.5f, 1);
             markerRect.sizeDelta = new Vector2(10, 5);
 
             // Text label
-            var textGO = new GameObject($"Text");
-            textGO.transform.SetParent(labelGO.transform, false);
+            var textGameObject = new GameObject("Text");
+            textGameObject.transform.SetParent(labelGameObject.transform, false);
 
-            var labelText = textGO.AddComponent<TextMeshProUGUI>();
+            var labelText = textGameObject.AddComponent<TextMeshProUGUI>();
             labelText.color = character.refs.customization.PlayerColor;
             labelText.font = _mainFont;
             labelText.fontSize = 18;
 
-            var textRect = textGO.GetComponent<RectTransform>();
+            var textRect = textGameObject.GetComponent<RectTransform>();
             textRect.anchorMin = textRect.anchorMax = new Vector2(0, 0.5f);
             textRect.pivot = new Vector2(0, 0.5f);
             textRect.anchoredPosition = new Vector2(20, 0);
 
-            _characterLabels[character] = labelGO;
+            _characterLabels[character] = labelGameObject;
         }
     }
 
     public void RemoveCharacter(Character character)
     {
-        var labelGO = _characterLabels[character];
-        DestroyImmediate(labelGO);
+        var characterLabel = _characterLabels[character];
+        DestroyImmediate(characterLabel);
         _characterLabels.Remove(character);
     }
 }
