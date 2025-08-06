@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using Photon.Pun;
@@ -57,7 +58,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
     {
         if (_overlay != null)
         {
-            Object.DestroyImmediate(_overlay);
+            UnityEngine.Object.DestroyImmediate(_overlay);
         }
 
         _overlay = new GameObject("ProgressMap");
@@ -145,23 +146,23 @@ public class ProgressMap : MonoBehaviourPunCallbacks
             {
                 case ProgressBarDisplayMode.Full:
                 {
-                var normalized = Mathf.InverseLerp(0f, TotalMountainHeight, height);
-                pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
+                    var normalized = Mathf.InverseLerp(0f, TotalMountainHeight, height);
+                    pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
                     break;
-            }
+                }
                 case ProgressBarDisplayMode.Centered:
-            {
-                var localH = Character.localCharacter.refs.stats.heightInMeters;
-                var logH = Mathf.Log(localH);
-                var logMin = logH - Mathf.Log(DisplayRange);
-                var logMax = logH + Mathf.Log(DisplayRange);
-                var logValue = Mathf.Log(height);
+                {
+                    var localH = Character.localCharacter.refs.stats.heightInMeters;
+                    var logH = Mathf.Log(localH);
+                    var logMin = logH - Mathf.Log(DisplayRange);
+                    var logMax = logH + Mathf.Log(DisplayRange);
+                    var logValue = Mathf.Log(height);
 
-                // normalized now runs 0→1 over [localH/zoom … localH*zoom], with log scaling
-                var normalized = Mathf.InverseLerp(logMin, logMax, logValue);
-                normalized = Mathf.Clamp01(normalized);
+                    // normalized now runs 0→1 over [localH/zoom … localH*zoom], with log scaling
+                    var normalized = Mathf.InverseLerp(logMin, logMax, logValue);
+                    normalized = Mathf.Clamp01(normalized);
 
-                pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
+                    pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
                     break;
                 }
                 default:
@@ -199,44 +200,44 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         Debug.Log($"Adding character {character}");
         if (_characterLabels.ContainsKey(character)) return;
 
-            // save the player's name
-            var nickname = character.refs.view.Owner.NickName;
+        // save the player's name
+        var nickname = character.refs.view.Owner.NickName;
 
-            // Parent label object
-            var labelGameObject = new GameObject($"Label_{nickname}");
-            labelGameObject.transform.SetParent(_overlay.transform, false);
+        // Parent label object
+        var labelGameObject = new GameObject($"Label_{nickname}");
+        labelGameObject.transform.SetParent(_overlay.transform, false);
 
-            var labelRect = labelGameObject.AddComponent<RectTransform>();
-            labelRect.anchorMin = labelRect.anchorMax = new Vector2(0, 0.5f);
+        var labelRect = labelGameObject.AddComponent<RectTransform>();
+        labelRect.anchorMin = labelRect.anchorMax = new Vector2(0, 0.5f);
 
-            // Dot marker
-            var markerGameObject = new GameObject("Marker");
-            markerGameObject.transform.SetParent(labelGameObject.transform, false);
+        // Dot marker
+        var markerGameObject = new GameObject("Marker");
+        markerGameObject.transform.SetParent(labelGameObject.transform, false);
 
-            var marker = markerGameObject.AddComponent<Image>();
-            marker.color = character.refs.customization.PlayerColor;
+        var marker = markerGameObject.AddComponent<Image>();
+        marker.color = character.refs.customization.PlayerColor;
 
-            var markerRect = markerGameObject.GetComponent<RectTransform>();
-            markerRect.anchorMin = markerRect.anchorMax = new Vector2(0, 0.5f);
-            markerRect.pivot = new Vector2(0.5f, 1);
-            markerRect.sizeDelta = new Vector2(10, 5);
+        var markerRect = markerGameObject.GetComponent<RectTransform>();
+        markerRect.anchorMin = markerRect.anchorMax = new Vector2(0, 0.5f);
+        markerRect.pivot = new Vector2(0.5f, 1);
+        markerRect.sizeDelta = new Vector2(10, 5);
 
-            // Text label
-            var textGameObject = new GameObject("Text");
-            textGameObject.transform.SetParent(labelGameObject.transform, false);
+        // Text label
+        var textGameObject = new GameObject("Text");
+        textGameObject.transform.SetParent(labelGameObject.transform, false);
 
-            var labelText = textGameObject.AddComponent<TextMeshProUGUI>();
-            labelText.color = character.refs.customization.PlayerColor;
-            labelText.font = _mainFont;
-            labelText.fontSize = 18;
+        var labelText = textGameObject.AddComponent<TextMeshProUGUI>();
+        labelText.color = character.refs.customization.PlayerColor;
+        labelText.font = _mainFont;
+        labelText.fontSize = 18;
 
-            var textRect = textGameObject.GetComponent<RectTransform>();
-            textRect.anchorMin = textRect.anchorMax = new Vector2(0, 0.5f);
-            textRect.pivot = new Vector2(0, 0.5f);
-            textRect.anchoredPosition = new Vector2(20, 0);
+        var textRect = textGameObject.GetComponent<RectTransform>();
+        textRect.anchorMin = textRect.anchorMax = new Vector2(0, 0.5f);
+        textRect.pivot = new Vector2(0, 0.5f);
+        textRect.anchoredPosition = new Vector2(20, 0);
 
-            _characterLabels[character] = labelGameObject;
-        }
+        _characterLabels[character] = labelGameObject;
+    }
 
     public void RemoveCharacter(Character character)
     {
