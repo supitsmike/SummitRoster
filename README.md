@@ -2,7 +2,7 @@
 
 Simple and unobtrusive view to show you and your friends' progress.
 
-![Screenshot showing a sidebar on the left edge of the screen. The sidebar has markers that display users' names and their height.](https://raw.githubusercontent.com/jspapp/SummitRoster/refs/heads/main/screenshot.jpg)
+![Screenshot showing a sidebar on the left edge of the screen. The sidebar has markers that display users' names and their height.](assets/screenshot.jpg)
 
 ## Installation
 The `plugins/` folder can be dropped right into `PEAK/BepInEx/` (or the contents of `plugins/` can be moved into `PEAK/Bepinex/plugins/`, same thing.)
@@ -19,7 +19,7 @@ Shows a relative view of the scouts around you, with logarithmic scaling. That m
 ### Settings
 Mode can be adjusted from the Settings page and updates in realtime.
 
-![Screenshot showing the menu page, with an option for "Summit Roster Display Mode" showing "Full" and "Centered".](https://raw.githubusercontent.com/jspapp/SummitRoster/refs/heads/main/settings.jpg)
+![Screenshot showing the menu page, with an option for "Summit Roster Display Mode" showing "Full" and "Centered".](assets/settings.jpg)
 
 ## Building
 
