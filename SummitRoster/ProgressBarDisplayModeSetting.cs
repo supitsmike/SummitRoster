@@ -1,38 +1,37 @@
 ﻿using System.Collections.Generic;
 using Zorro.Settings;
 
-namespace SummitRoster
+namespace SummitRoster;
+
+enum ProgressBarDisplayMode
 {
-    enum ProgressBarDisplayMode
+    Full, Centered
+}
+
+class ProgressBarDisplayModeSetting : EnumSetting<ProgressBarDisplayMode>, IExposedSetting
+{
+    public string GetDisplayName()
     {
-        Full, Centered
+        return "Summit Roster display mode";
     }
 
-    class ProgressBarDisplayModeSetting : EnumSetting<ProgressBarDisplayMode>, IExposedSetting
+    public string GetCategory()
     {
-        public string GetDisplayName()
-        {
-            return "Summit Roster display mode";
-        }
+        return "General";
+    }
 
-        public string GetCategory()
-        {
-            return "General";
-        }
+    protected override ProgressBarDisplayMode GetDefaultValue()
+    {
+        return ProgressBarDisplayMode.Full;
+    }
 
-        protected override ProgressBarDisplayMode GetDefaultValue()
-        {
-            return ProgressBarDisplayMode.Full;
-        }
+    public override List<UnityEngine.Localization.LocalizedString> GetLocalizedChoices()
+    {
+        return null;
+    }
 
-        public override List<UnityEngine.Localization.LocalizedString> GetLocalizedChoices()
-        {
-            return null;
-        }
-
-        public override void ApplyValue()
-        {
-            //
-        }
+    public override void ApplyValue()
+    {
+        //
     }
 }
