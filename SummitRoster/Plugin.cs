@@ -191,9 +191,8 @@ public class ProgressMap : MonoBehaviourPunCallbacks
     public void AddCharacter(Character character)
     {
         Debug.Log($"Adding character {character}");
+        if (_characterLabels.ContainsKey(character)) return;
 
-        if (!_characterLabels.ContainsKey(character))
-        {
             // save the player's name
             var nickname = character.refs.view.Owner.NickName;
 
@@ -232,7 +231,6 @@ public class ProgressMap : MonoBehaviourPunCallbacks
 
             _characterLabels[character] = labelGameObject;
         }
-    }
 
     public void RemoveCharacter(Character character)
     {
