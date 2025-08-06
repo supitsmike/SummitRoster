@@ -67,6 +67,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
 
         CanvasScaler scaler = overlay.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         scaler.referenceResolution = new Vector2(1920, 1080);
 
         // Load font
