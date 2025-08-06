@@ -141,12 +141,15 @@ public class ProgressMap : MonoBehaviourPunCallbacks
             labelGameObject.GetComponentInChildren<Image>().color = character.refs.customization.PlayerColor;
 
             float pixelY = 0;
-            if (_displayMode == ProgressBarDisplayMode.Full)
+            switch (_displayMode)
             {
+                case ProgressBarDisplayMode.Full:
+                {
                 var normalized = Mathf.InverseLerp(0f, TotalMountainHeight, height);
                 pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
+                    break;
             }
-            else if (_displayMode == ProgressBarDisplayMode.Centered)
+                case ProgressBarDisplayMode.Centered:
             {
                 var localH = Character.localCharacter.refs.stats.heightInMeters;
                 var logH = Mathf.Log(localH);
@@ -159,7 +162,10 @@ public class ProgressMap : MonoBehaviourPunCallbacks
                 normalized = Mathf.Clamp01(normalized);
 
                 pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
-
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             var labelRect = labelGameObject.GetComponent<RectTransform>();
