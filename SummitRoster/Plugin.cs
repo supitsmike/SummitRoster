@@ -32,7 +32,7 @@ public class Plugin : BaseUnityPlugin
 
     [HarmonyPatch(typeof(RunManager), "StartRun")]
     [HarmonyPostfix]
-    static void Post_LoadIsland()
+    private static void Post_LoadIsland()
     {
         Logger.LogInfo("Patch running ProgressMap");
         GameObject progressMap = new GameObject("ProgressMap", typeof(ProgressMap));
