@@ -173,7 +173,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         StartCoroutine(WaitAndAddPlayer(newPlayer));
     }
 
-    private IEnumerator WaitAndAddPlayer(Photon.Realtime.Player newPlayer)
+    private static IEnumerator WaitAndAddPlayer(Photon.Realtime.Player newPlayer)
     {
         yield return new WaitUntil(() => PlayerHandler.GetPlayerCharacter(newPlayer) != null);
 
