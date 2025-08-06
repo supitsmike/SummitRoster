@@ -61,10 +61,10 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         }
 
         _overlay = new GameObject("ProgressMap");
-        Canvas canvas = _overlay.AddComponent<Canvas>();
+        var canvas = _overlay.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        CanvasScaler scaler = _overlay.AddComponent<CanvasScaler>();
+        var scaler = _overlay.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         scaler.referenceResolution = new Vector2(1920, 1080);
@@ -72,7 +72,7 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         // Load font
         if (_mainFont == null)
         {
-            TMP_FontAsset[] fontAssets = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
+            var fontAssets = Resources.FindObjectsOfTypeAll<TMP_FontAsset>();
             _mainFont = fontAssets.FirstOrDefault(a => a.faceInfo.familyName == "Daruma Drop One");
         }
 
@@ -80,27 +80,27 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         _peakGo = new GameObject("PeakText", typeof(RectTransform), typeof(TextMeshProUGUI));
         _peakGo.transform.SetParent(_overlay.transform, false);
 
-        TextMeshProUGUI peakText = _peakGo.GetComponent<TextMeshProUGUI>();
+        var peakText = _peakGo.GetComponent<TextMeshProUGUI>();
         peakText.font = _mainFont;
         peakText.text = "PEAK";
         peakText.color = new Color(1f, 1f, 1f, 0.3f);
 
-        RectTransform peakRect = _peakGo.GetComponent<RectTransform>();
+        var peakRect = _peakGo.GetComponent<RectTransform>();
         peakRect.sizeDelta = peakText.GetPreferredValues();
         peakRect.anchorMin = peakRect.anchorMax = new Vector2(0, 0.5f);
         peakRect.pivot = new Vector2(0.5f, 0f);
         peakRect.anchoredPosition = new Vector2(LeftOffset, BottomOffset + (BarHeightPixels / 2));
 
         // Add vertical bar
-        GameObject barGO = new GameObject("AltitudeBar");
+        var barGO = new GameObject("AltitudeBar");
         barGO.transform.SetParent(_overlay.transform, false);
 
-        RectTransform barRect = barGO.AddComponent<RectTransform>();
+        var barRect = barGO.AddComponent<RectTransform>();
         barRect.anchorMin = barRect.anchorMax = new Vector2(0, 0.5f);
         barRect.sizeDelta = new Vector2(10, BarHeightPixels);
         barRect.anchoredPosition = new Vector2(LeftOffset, BottomOffset);
 
-        Image barImage = barGO.AddComponent<Image>();
+        var barImage = barGO.AddComponent<Image>();
         barImage.color = new Color(0.75f, 0.75f, 0.69f, 0.3f);
     }
 
@@ -128,12 +128,12 @@ public class ProgressMap : MonoBehaviourPunCallbacks
                 AddCharacter(character);
             }
 
-            GameObject labelGO = _characterLabels[character];
+            var labelGO = _characterLabels[character];
 
-            float height = character.refs.stats.heightInMeters;
-            string nickname = character.refs.view.Owner.NickName;
+            var height = character.refs.stats.heightInMeters;
+            var nickname = character.refs.view.Owner.NickName;
 
-            TextMeshProUGUI label = labelGO.GetComponentInChildren<TextMeshProUGUI>();
+            var label = labelGO.GetComponentInChildren<TextMeshProUGUI>();
             label.text = $"{nickname} {height}m";
             label.gameObject.GetComponent<RectTransform>().sizeDelta = label.GetPreferredValues() * 1.1f;
 
@@ -143,26 +143,26 @@ public class ProgressMap : MonoBehaviourPunCallbacks
             float pixelY = 0;
             if (_displayMode == ProgressBarDisplayMode.Full)
             {
-                float normalized = Mathf.InverseLerp(0f, TotalMountainHeight, height);
+                var normalized = Mathf.InverseLerp(0f, TotalMountainHeight, height);
                 pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
             }
             else if (_displayMode == ProgressBarDisplayMode.Centered)
             {
-                float localH = Character.localCharacter.refs.stats.heightInMeters;
-                float logH = Mathf.Log(localH);
-                float logMin = logH - Mathf.Log(DisplayRange);
-                float logMax = logH + Mathf.Log(DisplayRange);
-                float logValue = Mathf.Log(height);
+                var localH = Character.localCharacter.refs.stats.heightInMeters;
+                var logH = Mathf.Log(localH);
+                var logMin = logH - Mathf.Log(DisplayRange);
+                var logMax = logH + Mathf.Log(DisplayRange);
+                var logValue = Mathf.Log(height);
 
                 // normalized now runs 0→1 over [localH/zoom … localH*zoom], with log scaling
-                float normalized = Mathf.InverseLerp(logMin, logMax, logValue);
+                var normalized = Mathf.InverseLerp(logMin, logMax, logValue);
                 normalized = Mathf.Clamp01(normalized);
 
                 pixelY = Mathf.Lerp(-BarHeightPixels / 2f, BarHeightPixels / 2f, normalized);
 
             }
 
-            RectTransform labelRect = labelGO.GetComponent<RectTransform>();
+            var labelRect = labelGO.GetComponent<RectTransform>();
             labelRect.anchoredPosition = new Vector2(LeftOffset + 50f, BottomOffset + pixelY);
         }
     }
@@ -177,14 +177,14 @@ public class ProgressMap : MonoBehaviourPunCallbacks
     {
         yield return new WaitUntil(() => PlayerHandler.GetPlayerCharacter(newPlayer) != null);
 
-        ProgressMap map = GameObject.Find("ProgressMap").GetComponent<ProgressMap>();
+        var map = GameObject.Find("ProgressMap").GetComponent<ProgressMap>();
         map.AddCharacter(PlayerHandler.GetPlayerCharacter(newPlayer));
     }
 
     public override void OnPlayerLeftRoom(Photon.Realtime.Player leavingPlayer)
     {
         Debug.Log("Removing player from map");
-        ProgressMap map = GameObject.Find("ProgressMap").GetComponent<ProgressMap>();
+        var map = GameObject.Find("ProgressMap").GetComponent<ProgressMap>();
         map.RemoveCharacter(PlayerHandler.GetPlayerCharacter(leavingPlayer));
     }
 
@@ -195,37 +195,37 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         if (!_characterLabels.ContainsKey(character))
         {
             // save the player's name
-            string nickname = character.refs.view.Owner.NickName;
+            var nickname = character.refs.view.Owner.NickName;
 
             // Parent label object
-            GameObject labelGO = new GameObject($"Label_{nickname}");
+            var labelGO = new GameObject($"Label_{nickname}");
             labelGO.transform.SetParent(_overlay.transform, false);
 
-            RectTransform labelRect = labelGO.AddComponent<RectTransform>();
+            var labelRect = labelGO.AddComponent<RectTransform>();
             labelRect.anchorMin = labelRect.anchorMax = new Vector2(0, 0.5f);
 
             // Dot marker
-            GameObject markerGO = new GameObject($"Marker");
+            var markerGO = new GameObject($"Marker");
             markerGO.transform.SetParent(labelGO.transform, false);
 
-            Image marker = markerGO.AddComponent<Image>();
+            var marker = markerGO.AddComponent<Image>();
             marker.color = character.refs.customization.PlayerColor;
 
-            RectTransform markerRect = markerGO.GetComponent<RectTransform>();
+            var markerRect = markerGO.GetComponent<RectTransform>();
             markerRect.anchorMin = markerRect.anchorMax = new Vector2(0, 0.5f);
             markerRect.pivot = new Vector2(0.5f, 1);
             markerRect.sizeDelta = new Vector2(10, 5);
 
             // Text label
-            GameObject textGO = new GameObject($"Text");
+            var textGO = new GameObject($"Text");
             textGO.transform.SetParent(labelGO.transform, false);
 
-            TextMeshProUGUI labelText = textGO.AddComponent<TextMeshProUGUI>();
+            var labelText = textGO.AddComponent<TextMeshProUGUI>();
             labelText.color = character.refs.customization.PlayerColor;
             labelText.font = _mainFont;
             labelText.fontSize = 18;
 
-            RectTransform textRect = textGO.GetComponent<RectTransform>();
+            var textRect = textGO.GetComponent<RectTransform>();
             textRect.anchorMin = textRect.anchorMax = new Vector2(0, 0.5f);
             textRect.pivot = new Vector2(0, 0.5f);
             textRect.anchoredPosition = new Vector2(20, 0);
@@ -236,8 +236,8 @@ public class ProgressMap : MonoBehaviourPunCallbacks
 
     public void RemoveCharacter(Character character)
     {
-        GameObject labelGO = _characterLabels[character];
-        Object.DestroyImmediate(labelGO);
+        var labelGO = _characterLabels[character];
+        DestroyImmediate(labelGO);
         _characterLabels.Remove(character);
     }
 }
