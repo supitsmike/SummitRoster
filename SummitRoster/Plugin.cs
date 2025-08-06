@@ -14,7 +14,7 @@ namespace SummitRoster;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal new static ManualLogSource Logger;
 
     private void Awake()
     {
@@ -28,7 +28,6 @@ public class Plugin : BaseUnityPlugin
     private void Start()
     {
         SettingsHandler.Instance.AddSetting(new ProgressBarDisplayModeSetting());
-        // SettingsHandler.Instance.AddSetting(new ProgressBarDisplayRangeSetting());
     }
 
     [HarmonyPatch(typeof(RunManager), "StartRun")]
@@ -114,13 +113,11 @@ public class ProgressMap : MonoBehaviourPunCallbacks
         }
 
         displayMode = SettingsHandler.Instance.GetSetting<ProgressBarDisplayModeSetting>().Value;
-        // displayRange = SettingsHandler.Instance.GetSetting<ProgressBarDisplayRangeSetting>().Value;
     }
 
     private void LateUpdate()
     {
         displayMode = SettingsHandler.Instance.GetSetting<ProgressBarDisplayModeSetting>().Value;
-        // displayRange = SettingsHandler.Instance.GetSetting<ProgressBarDisplayRangeSetting>().Value;
 
         peakGO.SetActive(displayMode == ProgressBarDisplayMode.Full);
 
