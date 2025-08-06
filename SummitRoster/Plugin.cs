@@ -35,7 +35,7 @@ public class Plugin : BaseUnityPlugin
     private static void Post_LoadIsland()
     {
         Logger.LogInfo("Patch running ProgressMap");
-        GameObject progressMap = new GameObject("ProgressMap", typeof(ProgressMap));
+        _ = new GameObject("ProgressMap", typeof(ProgressMap));
     }
 }
 
